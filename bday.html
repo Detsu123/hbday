@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Төрсөн өдрийн мэнд 💖</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Fredoka:wght@400;600&family=Great+Vibes&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      overflow-x: hidden;
+      font-family: 'Quicksand', sans-serif;
+      background: linear-gradient(to bottom right, #ffdde1, #ee9ca7, #a18cd1);
+      background-attachment: fixed;
+      color: #fff0f5;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    h1 {
+      font-family: 'Great Vibes', cursive;
+      font-size: clamp(3rem, 6vw, 6rem);
+      margin: 2rem 0;
+      color: #ffffff;
+      text-shadow: 3px 3px 20px #ff69b4;
+      animation: sparkle 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes sparkle {
+      from { text-shadow: 0 0 15px #ff9a9e; }
+      to { text-shadow: 0 0 30px #fff; }
+    }
+
+    .profile-pic {
+      width: clamp(280px, 60vw, 400px);
+      border-radius: 20px;
+      border: 5px solid #ffffff;
+      box-shadow: 0 0 40px rgba(255, 182, 193, 0.9), 0 0 80px rgba(255, 105, 180, 0.8);
+      margin-bottom: 2rem;
+      transition: transform 0.4s ease;
+    }
+
+    .profile-pic:hover {
+      transform: scale(1.05) rotate(-1deg);
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-top: 3vh;
+    }
+
+    .btn {
+      padding: 1.2rem 2.8rem;
+      font-size: clamp(1.4rem, 2.5vw, 2.2rem);
+      border-radius: 30px;
+      background: linear-gradient(to right, #fcb69f, #ff9a9e);
+      border: none;
+      color: white;
+      box-shadow: 0 0 25px rgba(255, 105, 180, 0.6);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Fredoka', sans-serif;
+      position: relative;
+    }
+
+    .btn:hover {
+      transform: scale(1.07);
+      background: linear-gradient(to right, #ff758c, #ff7eb3);
+    }
+
+    #question, #final-message {
+      font-size: clamp(1.6rem, 3vw, 2.8rem);
+      margin-top: 3vh;
+      display: none;
+      font-family: 'Fredoka', sans-serif;
+    }
+
+    #final-message p {
+      padding: 1rem;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      display: inline-block;
+      text-shadow: 1px 1px 10px #ffb6c1;
+    }
+
+    .stars {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      background: transparent;
+      overflow: hidden;
+      z-index: -1;
+    }
+
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 4s infinite ease-in-out;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 1; }
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+
+<canvas id="fireworks"></canvas>
+<div class="stars" id="stars"></div>
+
+<img src="1.jpg" alt="Profile" class="profile-pic">
+<h1>Төрсөн өдрийн мэнд, Халиунаа ✨</h1>
+
+<div class="button-container" id="first-choice">
+  <button class="btn" onclick="handleThanks()">Баярлалаа 😘</button>
+  <button class="btn" id="runaway">Баярлахгүй, чадахгүй.  🏃‍♀️</button>
+</div>
+
+</html>
+
+<audio controls autoplay loop>
+  <source src="aud.mp3" type="audio/mp3">
+</audio>
+<style>
+  audio {
+    display: none;
+  }
+</style>
+
+<div id="question">
+  <p>Чи гэхдээ Дүнкүү тэ? 🤨</p>
+  <div class="button-container">
+    <button class="btn" onclick="showFinalMessage()">Тийм ээ </button>
+    <button class="btn" id="nope">Үгүй 😅</button>
+  </div>
+</div>
+
+<div id="final-message">
+  <p>За тоглосон юм аа Өнөөдрийг хэзээ ч мартагдашгүй сайхан өнгөрүүлээрэй хө! 💖✨</p>
+</div>
+
+<script>
+  const runawayBtn = document.getElementById('runaway');
+  const nopeBtn = document.getElementById('nope');
+
+  function moveButton(button) {
+    const rect = button.getBoundingClientRect();
+    let x = rect.left + (Math.random() * 1000 - 500); // илүү хол урагш/арагш
+let y = rect.top + (Math.random() * 1000 - 500);  // илүү хол дээш/доош
+
+    x = Math.max(0, Math.min(window.innerWidth - button.offsetWidth, x));
+    y = Math.max(0, Math.min(window.innerHeight - button.offsetHeight, y));
+    button.style.position = 'absolute';
+    button.style.left = `${x}px`;
+    button.style.top = `${y}px`;
+  }
+
+  runawayBtn.addEventListener('mouseenter', () => moveButton(runawayBtn));
+  nopeBtn.addEventListener('mouseenter', () => moveButton(nopeBtn));
+
+  function handleThanks() {
+    document.getElementById('first-choice').style.display = 'none';
+    document.getElementById('question').style.display = 'block';
+  }
+
+  function showFinalMessage() {
+    document.getElementById('question').style.display = 'none';
+    const final = document.getElementById('final-message');
+    final.style.display = 'block';
+    launchFireworks();
+    launchEmojiRain();
+  }
+
+  function launchEmojiRain() {
+    const emojis = ['🎂', '🎈', '😄', '🎉', '💖'];
+    for (let i = 0; i < 50; i++) {
+      const emoji = document.createElement('div');
+      emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      emoji.style.position = 'fixed';
+      emoji.style.left = `${Math.random() * 100}vw`;
+      emoji.style.top = '-2em';
+      emoji.style.fontSize = `${Math.random() * 24 + 28}px`;
+      emoji.style.animation = `fall ${Math.random() * 3 + 3}s ease-in forwards`;
+      emoji.style.zIndex = 999;
+      emoji.style.pointerEvents = 'none';
+      emoji.style.transition = 'opacity 0.5s ease';
+      document.body.appendChild(emoji);
+      setTimeout(() => emoji.remove(), 6000);
+    }
+  }
+
+  const canvas = document.getElementById("fireworks");
+  const ctx = canvas.getContext("2d");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  let particles = [];
+
+  function launchFireworks() {
+    let fireworkInterval = setInterval(() => {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height / 2;
+      for (let i = 0; i < 3; i++) {
+        createExplosion(x, y);
+      }
+    }, 300);
+
+    setTimeout(() => {
+      clearInterval(fireworkInterval);
+    }, 5000);
+  }
+
+  function createExplosion(x, y) {
+    const colors = ['#ff69b4', '#ffb347', '#87cefa', '#98fb98', '#dda0dd'];
+    for (let i = 0; i < 100; i++) {
+      particles.push({
+        x, y,
+        radius: Math.random() * 3 + 1,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        angle: Math.random() * 2 * Math.PI,
+        speed: Math.random() * 5 + 2,
+        life: 100
+      });
+    }
+  }
+
+  function animate() {
+    requestAnimationFrame(animate);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles = particles.filter(p => p.life > 0);
+    particles.forEach(p => {
+      p.x += Math.cos(p.angle) * p.speed;
+      p.y += Math.sin(p.angle) * p.speed;
+      p.life--;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.radius, 0, 2 * Math.PI);
+      ctx.fillStyle = p.color;
+      ctx.fill();
+    });
+  }
+
+  animate();
+
+  // 💫 Star background
+  const stars = document.getElementById("stars");
+  for (let i = 0; i < 80; i++) {
+    const star = document.createElement("div");
+    star.className = "star";
+    star.style.top = `${Math.random() * 100}vh`;
+    star.style.left = `${Math.random() * 100}vw`;
+    star.style.animationDuration = `${Math.random() * 3 + 2}s`;
+    stars.appendChild(star);
+  }
+
+  // 🔁 Canvas resize on window change
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+</script>
+</body>
+
